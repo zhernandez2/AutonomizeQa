@@ -173,7 +173,6 @@ class TestClaimsSystemDataExtraction:
             
             assert not is_valid, "Validation should fail for invalid status type"
     
-    @pytest.mark.skip(reason="Intentionally failing test for demo purposes. Remove @pytest.mark.skip to see error reporting.")
     def test_tc_agent_004_critical_data_integrity_check(self, api_base_url):
         """
         TC-AGENT-004: Claims System Data Extraction - Critical Data Integrity (DEMO FAILURE)
