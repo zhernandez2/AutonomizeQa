@@ -63,28 +63,4 @@ jobs:
         path: reports/
         retention-days: 30
     
-    - name: Comment PR with test results
-      uses: actions/github-script@v7
-      if: always() && github.event_name == 'pull_request'
-      with:
-        script: |
-          const fs = require('fs');
-          let comment = '## 🧪 Test Results\n\n';
-          comment += '📊 **Test reports have been generated and uploaded as artifacts.**\n\n';
-          comment += '### 📥 Download Reports\n';
-          comment += 'Click on "Summary" at the top of this workflow run to download:\n';
-          comment += '- `full_report.html` - Complete test report with results\n';
-          comment += '- `coverage/` - Code coverage report\n';
-          comment += '- `agent_tests.html` - Agent integration tests\n';
-          comment += '- `model_tests.html` - Model integration tests\n';
-          comment += '- `report.json` - Machine-readable test results\n\n';
-          comment += '### 📈 Quick Stats\n';
-          comment += 'Check the workflow logs above for pass/fail counts and coverage percentages.\n';
-          
-          github.rest.issues.createComment({
-            issue_number: context.issue.number,
-            owner: context.repo.owner,
-            repo: context.repo.repo,
-            body: comment
-          });
 
