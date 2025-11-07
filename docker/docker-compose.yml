@@ -1,6 +1,34 @@
 version: '3.8'
 
 services:
+  # =============================================================================
+  # MAIN APPLICATION SERVICE
+  # =============================================================================
+  # NOTE: Once we have a viable application to test against, add the main
+  # service configuration here. Example structure:
+  #
+  # autonomize-app:
+  #   build:
+  #     context: ../app
+  #     dockerfile: Dockerfile
+  #   container_name: autonomize-app
+  #   ports:
+  #     - "8000:8000"
+  #   environment:
+  #     - DATABASE_URL=${DATABASE_URL}
+  #     - API_KEY=${API_KEY}
+  #   networks:
+  #     - autonomize-network
+  #   healthcheck:
+  #     test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+  #     interval: 10s
+  #     timeout: 5s
+  #     retries: 5
+  #
+  # Then update the test-runner's API_BASE_URL to point to:
+  # http://autonomize-app:8000
+  # =============================================================================
+
   test-runner:
     build:
       context: ..
@@ -12,23 +40,19 @@ services:
       - ../reports:/app/reports
       - ../logs:/app/logs
     environment:
+      # Update this to point to the actual service once it's added above
       - API_BASE_URL=${API_BASE_URL:-http://host.docker.internal:8000}
       - TEST_DATA_PATH=/app/tests/fixtures/data
       - LOG_LEVEL=INFO
     networks:
       - autonomize-network
-    command: uv run pytest tests/ -v --html=reports/report.html --self-contained-html --json-report --json-report-file=reports/report.json
-
-  # Optional: Mock service for claims system integration testing
-  mock-claims-system:
-    image: wiremock/wiremock:latest
-    container_name: mock-claims-system
-    ports:
-      - "5000:8080"
-    volumes:
-      - ./wiremock/claims-system:/home/wiremock
-    networks:
-      - autonomize-network
+    # Uncomment the line below to make test-runner wait for the main app to be healthy
+    # depends_on:
+    #   autonomize-app:
+    #     condition: service_healthy
+    # Start script handles test execution - you can override with custom args:
+    # command: /app/start.sh tests/agent_integration/ -v -m agent
+    command: /app/start.sh
 
 networks:
   autonomize-network:

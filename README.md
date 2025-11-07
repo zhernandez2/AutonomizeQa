@@ -17,17 +17,18 @@ This repository contains a comprehensive test suite for validating an Agentic Pl
 ```
 Autonomize/
 ├── tests/
-│   ├── agent_integration/      # Agent Integration Tests
-│   ├── model_integration/       # Model Integration Tests
-│   ├── ui_ux_validation/        # UX/UI Validation Tests
-│   ├── safety_privacy/          # Safety & Privacy Tests
+│   ├── agent_integration/      # Agent Integration Tests (Automated)
+│   ├── model_integration/       # Model Integration Tests (Automated)
 │   ├── fixtures/                # Test fixtures and mocks
 │   └── utils/                   # Test utilities
-├── config/                      # Configuration files
 ├── reports/                     # Test reports (generated)
 ├── docker/                      # Docker configurations
+│   ├── Dockerfile               # Docker image definition
+│   ├── docker-compose.yml       # Docker compose configuration
+│   └── start.sh                 # Container startup script
 ├── .github/workflows/           # GitHub Actions CI/CD workflows
 ├── docs/                        # Test case documentation
+├── justfile                     # Just command runner recipes
 ├── pyproject.toml               # Project configuration and dependencies
 └── uv.lock                      # Locked dependency versions (generated)
 ```
@@ -35,6 +36,7 @@ Autonomize/
 ### Prerequisites
 - Python 3.13+
 - [uv](https://github.com/astral-sh/uv) (latest version) - Fast Python package installer and resolver
+- [just](https://github.com/casey/just) (recommended) - Command runner for easier workflow management
 - Docker and Docker Compose (optional)
 - Git
 
@@ -54,9 +56,6 @@ Autonomize/
    # On Windows
    powershell -c "irm https://astral.sh/uv/install.ps1 | iex"
    
-   # Or using pip
-   pip install uv
-   ```
 
 3. **Install dependencies using uv**
    ```bash
@@ -66,49 +65,99 @@ Autonomize/
    
    **Note:** The `uv.lock` file should be committed to version control to ensure all team members use the same dependency versions.
 
-4. **Set up environment variables**
-   ```bash
-   cp config/.env.example config/.env
-   # Edit config/.env with your configuration
-   ```
 
 ### Test Execution
 
-#### Run All Tests
+#### Quick Commands with Just
+
+This project uses [`just`](https://github.com/casey/just) as a command runner for easier workflow management.
+
+```bash
+# On macOS
+brew install just
+
+# On Windows - Using Winget (built into Windows 10/11):
+winget install --id Casey.Just
+```
+
+**Note:** If you don't have `just` installed, you can still run all commands directly using `uv run pytest ...` - see examples below.
+
+**View all available commands:**
+```bash
+just
+# or
+just --list
+```
+
+**Test Commands:**
+```bash
+# Run all tests
+just test
+
+# Run specific test groups
+just test-agent      # Agent integration tests
+just test-model      # Model integration tests
+
+# Run all test groups in sequence
+just test-all
+
+# Run tests with HTML report
+just test-report
+```
+
+**Other useful commands:**
+```bash
+# Install dependencies
+just install
+
+# Format code
+just format
+
+# Run linters
+just lint
+
+# Clean generated files
+just clean
+
+# Update all dependencies
+just update-deps
+```
+
+#### Run All Tests (Direct Command)
 ```bash
 uv run pytest tests/ -v --html=reports/report.html --self-contained-html
 ```
 
-#### Run Specific Test Suites
+#### Run Specific Test Suites (Direct Commands)
 ```bash
 # Agent Integration Tests
-uv run pytest tests/agent_integration/ -v
+uv run pytest tests/agent_integration/ -v -m agent
 
 # Model Integration Tests
-uv run pytest tests/model_integration/ -v
+uv run pytest tests/model_integration/ -v -m model
 
-# UX/UI Validation Tests
-uv run pytest tests/ui_ux_validation/ -v
-
-# Safety & Privacy Tests
-uv run pytest tests/safety_privacy/ -v
-```
-
-#### Using the Test Runner Script
-```bash
-# Run all tests with summary
-uv run python run_tests.py --summary
-
-# Run specific test suite
-uv run python run_tests.py --suite agent_integration --marker p0
-
-# Run with custom options
-uv run python run_tests.py --suite model_integration --no-coverage
+# Run tests with specific markers
+uv run pytest tests/ -v -m smoke
+uv run pytest tests/ -v -m regression
 ```
 
 #### Run Tests with Docker
+
+The Docker setup uses a `start.sh` script for streamlined test execution with health checks and configuration display.
+
 ```bash
+# Using just (recommended)
+just docker-build         # Build Docker image
+just docker-run          # Build and run tests in Docker
+just docker-run-quick    # Run tests without rebuilding
+just docker-logs         # View test runner logs
+just docker-down         # Stop and remove containers
+
+# Or directly
 docker-compose -f docker/docker-compose.yml up --build
+
+# Run with custom test arguments
+docker-compose -f docker/docker-compose.yml run test-runner /app/start.sh tests/agent_integration/ -v -m agent
 ```
 
 #### Run Tests in CI/CD Pipeline
@@ -116,17 +165,34 @@ Tests automatically run on push and pull requests via GitHub Actions. See `.gith
 
 ### Test Cases
 
-#### Test Case Prioritization
-- **P0 (Critical)**: Patient safety, data integrity, HIPAA compliance
-- **P1 (High)**: Core functionality, data accuracy, model correctness
-- **P2 (Medium)**: Edge cases, error handling, UX improvements
-- **P3 (Low)**: Nice-to-have features, minor improvements
-
 Detailed test case documentation is available in the `docs/` directory:
-- [Agent Integration Test Cases](docs/test_cases/agent_integration.md)
-- [Model Integration Test Cases](docs/test_cases/model_integration.md)
-- [UX/UI Validation Test Cases](docs/test_cases/ui_ux_validation.md)
-- [Safety & Privacy Test Cases](docs/test_cases/safety_privacy.md)
+- [Agent Integration Test Cases](docs/test_cases/agent_integration.md) - **Automated tests**
+- [Model Integration Test Cases](docs/test_cases/model_integration.md) - **Automated tests**
+- [Safety & Privacy Test Cases](docs/test_cases/safety_privacy.md) - Proposed test suite documentation
+- [UI/UX Validation Test Cases](docs/test_cases/ui_ux_validation.md) - Manual test documentation
+
+#### Test Case Prioritization
+
+Each test case is classified with three dimensions to guide test execution planning:
+
+- **Priority**: Determines execution order (Critical → High → Medium → Low)
+  - **Critical**: Must be executed first, blockers for production deployment
+  - **High**: Core functionality tests, executed in every test run
+  - **Medium**: Important but not blocking, can be deferred under time constraints
+  - **Low**: Nice-to-have validations, optional for quick test cycles
+
+- **Risk**: Impact if the feature fails in production (Critical → High → Medium → Low)
+  - **Critical**: Patient safety or regulatory compliance risk (HIPAA violations, data breaches)
+  - **High**: Significant business impact or data integrity issues
+  - **Medium**: User experience degradation or minor data issues
+  - **Low**: Cosmetic issues or edge case failures
+
+- **Complexity**: Test implementation and maintenance effort (High → Medium → Low)
+  - **High**: Requires complex setup, multiple integrations, or extensive data preparation
+  - **Medium**: Standard integration testing with moderate setup
+  - **Low**: Simple unit-style tests with minimal dependencies
+
+This prioritization helps QA engineers determine what to automate first and what to execute when time is limited.
 
 ### CI/CD Integration
 
@@ -137,16 +203,15 @@ The workflow runs tests on Python 3.13 and generates comprehensive test reports 
 
 ### Safety & Privacy Testing
 
-Additional test cases have been created to safeguard member/patient safety and privacy:
-- HIPAA compliance validation
-- PHI (Protected Health Information) handling
-- Data encryption validation
-- Access control verification
-- Audit logging
-- Data retention policies
-- Consent management
+Proposed test cases for safeguarding member/patient safety and privacy compliance:
+- **HIPAA Compliance**: PHI encryption in transit and at rest
+- **Access Control**: Role-based access (RBAC) with audit trails
+- **Audit Logging**: Comprehensive PHI access tracking
+- **Patient Safety**: Critical risk alert accuracy and validation
+- **Data Protection**: Encryption standards and secure transmission
+- **Regulatory Compliance**: HITECH Act breach notification requirements
 
-See `docs/test_cases/safety_privacy.md` for detailed test cases.
+These test cases are documented in `docs/test_cases/safety_privacy.md` and would be implemented once core agent and model integration testing is validated. They represent critical requirements for a production healthcare system.
 
 ### Reporting
 
@@ -165,17 +230,26 @@ This project uses [uv](https://github.com/astral-sh/uv) for fast and reliable de
 
 **Adding a new dependency:**
 ```bash
-uv add package-name
+just add-dep package-name
+# or directly: uv add package-name
+```
+
+**Installing/syncing dependencies:**
+```bash
+just install
+# or directly: uv sync
 ```
 
 **Updating dependencies:**
 ```bash
-uv sync
+just update-deps
+# or directly: uv sync --upgrade
 ```
 
 **Removing a dependency:**
 ```bash
-uv remove package-name
+just remove-dep package-name
+# or directly: uv remove package-name
 ```
 
 ### Contributing
@@ -183,6 +257,11 @@ uv remove package-name
 1. Follow the test case template in `docs/templates/`
 2. Ensure all tests include proper assertions and error handling
 3. Update test documentation when adding new test cases
-4. Run linters and formatters before committing
+4. Run linters and formatters before committing:
+   ```bash
+   just format      # Format code with ruff
+   just lint        # Check for linting issues
+   just lint-fix    # Auto-fix linting issues
+   ```
 5. Use `uv` for dependency management
 

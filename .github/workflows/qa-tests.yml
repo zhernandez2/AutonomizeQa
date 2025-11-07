@@ -31,7 +31,7 @@ jobs:
 
     - name: Run Agent Integration Tests
       run: |
-        uv run pytest tests/agent_integration/ -v -m "agent and p0" \
+        uv run pytest tests/agent_integration/ -v -m agent \
           --html=reports/agent_tests.html \
           --self-contained-html \
           --junitxml=reports/agent_tests.xml
@@ -39,26 +39,10 @@ jobs:
     
     - name: Run Model Integration Tests
       run: |
-        uv run pytest tests/model_integration/ -v -m "model and p0" \
+        uv run pytest tests/model_integration/ -v -m model \
           --html=reports/model_tests.html \
           --self-contained-html \
           --junitxml=reports/model_tests.xml
-      continue-on-error: true
-    
-    - name: Run UI/UX Tests
-      run: |
-        uv run pytest tests/ui_ux_validation/ -v -m "ui and p0" \
-          --html=reports/ui_tests.html \
-          --self-contained-html \
-          --junitxml=reports/ui_tests.xml
-      continue-on-error: true
-    
-    - name: Run Safety & Privacy Tests
-      run: |
-        uv run pytest tests/safety_privacy/ -v -m "safety and p0" \
-          --html=reports/safety_tests.html \
-          --self-contained-html \
-          --junitxml=reports/safety_tests.xml
       continue-on-error: true
     
     - name: Generate Full Test Report

@@ -29,6 +29,10 @@ RUN if [ -f uv.lock ]; then \
 # Copy application code
 COPY . .
 
+# Copy and make start script executable
+COPY docker/start.sh /app/start.sh
+RUN chmod +x /app/start.sh
+
 # Create reports directory
 RUN mkdir -p reports logs
 
@@ -37,6 +41,6 @@ ENV PYTHONPATH=/app
 ENV PYTEST_CURRENT_TEST=""
 ENV PATH="/app/.venv/bin:$PATH"
 
-# Default command
-CMD ["uv", "run", "pytest", "tests/", "-v", "--html=reports/report.html", "--self-contained-html"]
+# Default command - runs start.sh which handles test execution
+CMD ["/app/start.sh"]
 

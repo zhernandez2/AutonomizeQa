@@ -1,8 +1,8 @@
 # Test Case Template
 
 ## TC-XXX-YYY: Test Case Title
-**Priority**: P0/P1/P2/P3  
-**Category**: Category Name
+**Category**: Category Name  
+**Priority**: Critical/High/Medium/Low | **Risk**: Critical/High/Medium/Low | **Complexity**: High/Medium/Low
 
 ### Objective
 Brief description of what this test case validates.
@@ -30,7 +30,4 @@ Brief description of what this test case validates.
   "test": "data"
 }
 ```
-
-### Suggested Modifications
-- Potential improvements or variations
 

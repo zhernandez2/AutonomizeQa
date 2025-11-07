@@ -1,4 +1,0 @@
-"""
-UI/UX Validation Tests
-"""
-
