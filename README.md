@@ -205,27 +205,13 @@ The workflow runs tests on Python 3.13 and generates comprehensive test reports 
 
 Test reports are automatically generated and uploaded as artifacts on every workflow run:
 
-1. **Navigate to Actions Tab**
+1. **Navigate to Upload test results**
    - Go to your repository on GitHub
    - Click the **"Actions"** tab at the top
 
-2. **Select Workflow Run**
-   - Click on the specific workflow run you want to review
-   - Look for "QA Test Suite" runs
-
-3. **Download Artifacts**
-   - Click **"Summary"** at the top of the workflow run
-   - Scroll down to the **"Artifacts"** section at the bottom
-   - Download `test-results-3.13.zip`
-
-4. **View Reports**
-   - Unzip the downloaded file
-   - Open `full_report.html` in your browser for complete test results
-   - Open `coverage/index.html` for code coverage report
-   - Individual suite reports: `agent_tests.html`, `model_tests.html`
-   - Machine-readable results: `report.json`, `junit.xml`
-
-**Note**: Test artifacts are retained for 30 days. The workflow will also post a comment on pull requests with direct links to download reports.
+2. **Download the artifact url**
+   - Open up the folder you just downloaded
+   - Open up the html file to see the test results
 
 ### Safety & Privacy Testing
 
