@@ -215,8 +215,8 @@ This project contains **2 automated test suites** and **2 documentation-only tes
 #### Documentation-Only Test Suites (Detailed Test Cases)
 
 **3. Safety & Privacy Test Cases** (`docs/test_cases/safety_privacy.md`)
-- Comprehensive test case designs for HIPAA compliance, access control, audit logging, and patient safety
-- Ready to implement once core integration testing is validated
+- High-level test case designs for data privacy, access control, data validation, and patient safety
+- Focuses on general security principles applicable to healthcare systems
 
 **4. UI/UX Validation Test Cases** (`docs/test_cases/ui_ux_validation.md`)
 - Manual test procedures for file upload validation and error messaging
@@ -227,7 +227,7 @@ This project contains **2 automated test suites** and **2 documentation-only tes
 Detailed test case documentation is available in the `docs/` directory:
 - [Agent Integration Test Cases](docs/test_cases/agent_integration.md) - **Automated tests** (3 detailed + 2 scenarios)
 - [Model Integration Test Cases](docs/test_cases/model_integration.md) - **Automated tests** (3 detailed + 2 scenarios)
-- [Safety & Privacy Test Cases](docs/test_cases/safety_privacy.md) - Proposed test suite (4 detailed + 2 scenarios)
+- [Safety & Privacy Test Cases](docs/test_cases/safety_privacy.md) - Proposed test suite (4 high-level + 2 scenarios)
 - [UI/UX Validation Test Cases](docs/test_cases/ui_ux_validation.md) - Manual testing (3 detailed + 2 scenarios)
 
 #### Test Case Prioritization
@@ -273,15 +273,15 @@ Test reports are automatically generated and uploaded as artifacts on every work
 
 ### Safety & Privacy Testing
 
-Proposed test cases for safeguarding member/patient safety and privacy compliance:
-- **HIPAA Compliance**: PHI encryption in transit and at rest
-- **Access Control**: Role-based access (RBAC) with audit trails
-- **Audit Logging**: Comprehensive PHI access tracking
-- **Patient Safety**: Critical risk alert accuracy and validation
-- **Data Protection**: Encryption standards and secure transmission
-- **Regulatory Compliance**: HITECH Act breach notification requirements
+Proposed high-level test cases for data security and patient safety:
+- **Data Privacy**: Preventing PHI/PII exposure in API responses, logs, and errors
+- **Access Control**: Unauthorized access prevention and permission enforcement
+- **Data Validation**: Input validation to prevent invalid/dangerous operations
+- **Patient Safety**: Critical alert accuracy and proper risk flagging
+- **Session Security**: Timeout and re-authentication requirements
+- **Data Encryption**: Encryption at rest and in transit
 
-These test cases are documented in `docs/test_cases/safety_privacy.md` and would be implemented once core agent and model integration testing is validated. They represent critical requirements for a production healthcare system.
+These test cases are documented in `docs/test_cases/safety_privacy.md` as general security principles that would be implemented once core integration testing is validated. They focus on foundational security concepts applicable to healthcare systems without requiring deep regulatory expertise.
 
 ### Reporting
 
