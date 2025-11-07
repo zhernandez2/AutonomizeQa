@@ -60,3 +60,5 @@ test-results/
 allure-results/
 allure-report/
 
+#additional files
+autonomize_ai_qa_test_suite.egg-info/
