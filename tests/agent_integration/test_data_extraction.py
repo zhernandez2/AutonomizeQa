@@ -6,7 +6,6 @@ import pytest
 import requests
 from unittest.mock import Mock, patch
 from tests.utils.validators import DataValidator
-import time
 
 
 @pytest.mark.agent

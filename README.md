@@ -1,17 +1,47 @@
 # Autonomize AI - QA Test Suite
 
 ### Overview
-This repository contains a comprehensive test suite for validating an Agentic Platform's data validation and model integration processes, with a strong emphasis on patient safety and compliance. The test suite covers agent integration, model integration, UX/UI validation, and includes extensive safety and privacy testing.
+This repository contains a focused, QA test suite for testing an Agentic Platform's data validation and model integration in a healthcare context. 
+
+**What's Included:**
+- **2 Automated Test Suites**: Agent Integration (4 tests) and Model Integration (3 tests)
+- **2 Documentation Suites**: Safety & Privacy and UI/UX Validation with detailed test case designs
+- **Modern Tooling**: `uv` for fast dependency management, `just` for easy commands, Docker support
+- **CI/CD Ready**: GitHub Actions workflow with automated test reports
+- **Comprehensive Reporting**: HTML, JSON, and XML test reports with code coverage
 
 ### Table of Contents
+- [Quick Start](#quick-start)
 - [Project Structure](#project-structure)
 - [Prerequisites](#prerequisites)
 - [Installation](#installation)
 - [Test Execution](#test-execution)
-- [Test Cases](#test-cases)
+- [Test Suites](#test-suites)
 - [CI/CD Integration](#cicd-integration)
 - [Safety & Privacy Testing](#safety--privacy-testing)
 - [Reporting](#reporting)
+- [Key Features](#key-features)
+
+### Quick Start
+
+```bash
+# 1. Install dependencies
+uv sync
+
+# 2. Run all tests
+uv run pytest tests/ -v
+
+# 3. View report
+open reports/report.html  # macOS
+# or
+start reports/report.html  # Windows
+```
+
+**Expected Results**: 
+- 6 tests pass
+- 1 test skipped (demo failure test)
+- Execution time: ~0.5s
+- Coverage: ~70%
 
 ### Project Structure
 ```
@@ -163,13 +193,42 @@ docker-compose -f docker/docker-compose.yml run test-runner /app/start.sh tests/
 #### Run Tests in CI/CD Pipeline
 Tests automatically run on push and pull requests via GitHub Actions. See `.github/workflows/qa-tests.yml` for configuration.
 
-### Test Cases
+### Test Suites
+
+This project contains **2 automated test suites** and **2 documentation-only test suites**:
+
+#### Automated Test Suites (Implemented)
+
+**1. Agent Integration Tests** (`tests/agent_integration/`)
+- `test_tc_agent_001`: Claims data extraction - happy path
+- `test_tc_agent_002`: Missing required fields validation
+- `test_tc_agent_003`: Invalid data types handling
+- `test_tc_agent_004`: Critical data integrity check (**Skipped by default** - intentionally failing test for demo)
+
+**2. Model Integration Tests** (`tests/model_integration/`)
+- `test_tc_model_001`: Risk classification with standard input
+- `test_tc_model_002`: Edge case values and minimal data handling
+- `test_tc_model_003`: Sentiment analysis for patient text input
+
+**Note on Demo Test**: `test_tc_agent_004` is marked with `@pytest.mark.skip` by default. Remove the skip decorator to see error reporting in action - it simulates detecting a critical data integrity issue (negative claim amount).
+
+#### Documentation-Only Test Suites (Detailed Test Cases)
+
+**3. Safety & Privacy Test Cases** (`docs/test_cases/safety_privacy.md`)
+- Comprehensive test case designs for HIPAA compliance, access control, audit logging, and patient safety
+- Ready to implement once core integration testing is validated
+
+**4. UI/UX Validation Test Cases** (`docs/test_cases/ui_ux_validation.md`)
+- Manual test procedures for file upload validation and error messaging
+- Demonstrates UX testing approach for healthcare applications
+
+#### Test Case Documentation
 
 Detailed test case documentation is available in the `docs/` directory:
-- [Agent Integration Test Cases](docs/test_cases/agent_integration.md) - **Automated tests**
-- [Model Integration Test Cases](docs/test_cases/model_integration.md) - **Automated tests**
-- [Safety & Privacy Test Cases](docs/test_cases/safety_privacy.md) - Proposed test suite documentation
-- [UI/UX Validation Test Cases](docs/test_cases/ui_ux_validation.md) - Manual test documentation
+- [Agent Integration Test Cases](docs/test_cases/agent_integration.md) - **Automated tests** (3 detailed + 2 scenarios)
+- [Model Integration Test Cases](docs/test_cases/model_integration.md) - **Automated tests** (3 detailed + 2 scenarios)
+- [Safety & Privacy Test Cases](docs/test_cases/safety_privacy.md) - Proposed test suite (4 detailed + 2 scenarios)
+- [UI/UX Validation Test Cases](docs/test_cases/ui_ux_validation.md) - Manual testing (3 detailed + 2 scenarios)
 
 #### Test Case Prioritization
 
@@ -205,9 +264,8 @@ The workflow runs tests on Python 3.13 and generates comprehensive test reports 
 
 Test reports are automatically generated and uploaded as artifacts on every workflow run:
 
-1. **Navigate to Upload test results**
-   - Go to your repository on GitHub
-   - Click the **"Actions"** tab at the top
+1. **Navigate to Upload test results in the github action checks**
+   - Click the artifact download url link
 
 2. **Download the artifact url**
    - Open up the folder you just downloaded
@@ -227,14 +285,34 @@ These test cases are documented in `docs/test_cases/safety_privacy.md` and would
 
 ### Reporting
 
-Test reports are generated automatically and include:
-- Test execution summary
-- Pass/fail statistics
-- Defect summaries
-- Recommendations for regression testing
-- Risk assessment
+Test reports are automatically generated in multiple formats:
 
-Reports are saved in the `reports/` directory in HTML, JSON, and XML formats.
+**Report Types:**
+- `reports/report.html` - Self-contained HTML report with all test results
+- `reports/report.json` - Machine-readable JSON format for CI/CD integration
+- `reports/junit.xml` - JUnit XML format for CI/CD tools
+- `reports/coverage/` - Code coverage report with detailed breakdown
+- `reports/agent_tests.html` - Agent integration test results
+- `reports/model_tests.html` - Model integration test results
+
+**What's Included:**
+- Test execution summary with pass/fail statistics
+- Code coverage metrics
+- Detailed assertion failures with context
+- Execution time for each test
+- Test metadata (markers, fixtures used)
+- Color-coded results for easy scanning
+
+**Viewing Reports Locally:**
+```bash
+# Generate and view HTML report
+just test-report
+open reports/report.html  # macOS
+start reports/report.html  # Windows
+```
+
+**Viewing Reports in CI/CD:**  
+See [Accessing CI/CD Test Reports](#accessing-cicd-test-reports) section for downloading artifacts from GitHub Actions.
 
 ### Dependency Management
 
@@ -263,17 +341,3 @@ just update-deps
 just remove-dep package-name
 # or directly: uv remove package-name
 ```
-
-### Contributing
-
-1. Follow the test case template in `docs/templates/`
-2. Ensure all tests include proper assertions and error handling
-3. Update test documentation when adding new test cases
-4. Run linters and formatters before committing:
-   ```bash
-   just format      # Format code with ruff
-   just lint        # Check for linting issues
-   just lint-fix    # Auto-fix linting issues
-   ```
-5. Use `uv` for dependency management
-
