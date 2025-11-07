@@ -1,0 +1,9 @@
+# uv configuration file
+# This file configures uv behavior
+
+# Enable preview features
+preview = true
+
+# Default Python version
+python-version = "3.13"
+

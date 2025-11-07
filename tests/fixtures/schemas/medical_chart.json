@@ -1,0 +1,122 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Medical Chart Schema",
+  "description": "Schema for medical chart data validation",
+  "type": "object",
+  "required": [
+    "chart_id",
+    "patient_id",
+    "visit_date",
+    "provider",
+    "chief_complaint"
+  ],
+  "properties": {
+    "chart_id": {
+      "type": "string",
+      "pattern": "^CHT[0-9]{3,}$",
+      "description": "Unique chart identifier"
+    },
+    "patient_id": {
+      "type": "string",
+      "pattern": "^PAT[0-9]{3,}$",
+      "description": "Patient identifier"
+    },
+    "visit_date": {
+      "type": "string",
+      "format": "date",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+      "description": "Visit date in YYYY-MM-DD format"
+    },
+    "provider": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200,
+      "description": "Healthcare provider name"
+    },
+    "chief_complaint": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 500,
+      "description": "Primary reason for visit"
+    },
+    "history_of_present_illness": {
+      "type": "string",
+      "maxLength": 2000,
+      "description": "History of present illness"
+    },
+    "vital_signs": {
+      "type": "object",
+      "properties": {
+        "blood_pressure": {
+          "type": "string",
+          "pattern": "^[0-9]{2,3}\\/[0-9]{2,3}$",
+          "description": "Blood pressure in systolic/diastolic format"
+        },
+        "heart_rate": {
+          "type": "integer",
+          "minimum": 30,
+          "maximum": 220,
+          "description": "Heart rate in beats per minute"
+        },
+        "temperature": {
+          "type": "number",
+          "minimum": 90,
+          "maximum": 110,
+          "description": "Temperature in Fahrenheit"
+        },
+        "respiratory_rate": {
+          "type": "integer",
+          "minimum": 8,
+          "maximum": 40,
+          "description": "Respiratory rate per minute"
+        },
+        "oxygen_saturation": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100,
+          "description": "Oxygen saturation percentage"
+        }
+      }
+    },
+    "assessment": {
+      "type": "string",
+      "maxLength": 1000,
+      "description": "Clinical assessment"
+    },
+    "plan": {
+      "type": "string",
+      "maxLength": 1000,
+      "description": "Treatment plan"
+    },
+    "diagnosis": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "description": "List of diagnoses (ICD-10 codes or descriptions)"
+    },
+    "medications": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 1
+          },
+          "dosage": {
+            "type": "string",
+            "minLength": 1
+          },
+          "frequency": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": ["name"]
+      }
+    }
+  }
+}
+

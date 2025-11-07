@@ -1,0 +1,91 @@
+name: QA Test Suite
+
+on:
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        python-version: ['3.13']
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Install uv
+      uses: astral-sh/setup-uv@v3
+      with:
+        version: "latest"
+    
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python-version }}
+    
+    - name: Install dependencies with uv
+      run: |
+       uv sync --all-extras
+
+    - name: Run Agent Integration Tests
+      run: |
+        uv run pytest tests/agent_integration/ -v -m "agent and p0" \
+          --html=reports/agent_tests.html \
+          --self-contained-html \
+          --junitxml=reports/agent_tests.xml
+      continue-on-error: true
+    
+    - name: Run Model Integration Tests
+      run: |
+        uv run pytest tests/model_integration/ -v -m "model and p0" \
+          --html=reports/model_tests.html \
+          --self-contained-html \
+          --junitxml=reports/model_tests.xml
+      continue-on-error: true
+    
+    - name: Run UI/UX Tests
+      run: |
+        uv run pytest tests/ui_ux_validation/ -v -m "ui and p0" \
+          --html=reports/ui_tests.html \
+          --self-contained-html \
+          --junitxml=reports/ui_tests.xml
+      continue-on-error: true
+    
+    - name: Run Safety & Privacy Tests
+      run: |
+        uv run pytest tests/safety_privacy/ -v -m "safety and p0" \
+          --html=reports/safety_tests.html \
+          --self-contained-html \
+          --junitxml=reports/safety_tests.xml
+      continue-on-error: true
+    
+    - name: Generate Full Test Report
+      run: |
+        uv run pytest tests/ -v \
+          --html=reports/full_report.html \
+          --self-contained-html \
+          --json-report \
+          --json-report-file=reports/report.json \
+          --junitxml=reports/junit.xml \
+          --cov=tests \
+          --cov-report=html:reports/coverage \
+          --cov-report=xml:reports/coverage.xml
+      continue-on-error: true
+    
+    - name: Upload test results
+      uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: test-results-${{ matrix.python-version }}
+        path: reports/
+    
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v3
+      if: always()
+      with:
+        file: reports/coverage.xml
+        flags: unittests
+        name: codecov-umbrella
+

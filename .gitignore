@@ -1,0 +1,62 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+.venv
+pip-log.txt
+pip-delete-this-directory.txt
+
+# uv
+.venv/
+.python-version
+# Note: uv.lock should be committed for reproducible builds
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+*.cover
+.hypothesis/
+
+# Reports
+reports/*.html
+reports/*.xml
+reports/*.json
+!reports/.gitkeep
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment
+.env
+.env.local
+config/.env
+
+# Logs
+*.log
+logs/
+
+# Docker
+.dockerignore
+
+# Playwright
+playwright-report/
+test-results/
+
+# Allure
+allure-results/
+allure-report/
+

@@ -1,0 +1,76 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Claims Data Schema",
+  "description": "Schema for healthcare claims data validation",
+  "type": "object",
+  "required": [
+    "claim_id",
+    "patient_id",
+    "provider_id",
+    "claim_date",
+    "amount",
+    "status"
+  ],
+  "properties": {
+    "claim_id": {
+      "type": "string",
+      "pattern": "^CLM[0-9]{3,}$",
+      "description": "Unique claim identifier"
+    },
+    "patient_id": {
+      "type": "string",
+      "pattern": "^PAT[0-9]{3,}$",
+      "description": "Patient identifier"
+    },
+    "provider_id": {
+      "type": "string",
+      "pattern": "^PRV[0-9]{3,}$",
+      "description": "Healthcare provider identifier"
+    },
+    "claim_date": {
+      "type": "string",
+      "format": "date",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+      "description": "Claim date in YYYY-MM-DD format"
+    },
+    "amount": {
+      "type": "number",
+      "minimum": 0,
+      "multipleOf": 0.01,
+      "description": "Claim amount in dollars (2 decimal places)"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["pending", "approved", "rejected", "paid", "denied"],
+      "description": "Claim status"
+    },
+    "service_date": {
+      "type": "string",
+      "format": "date",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+      "description": "Service date in YYYY-MM-DD format"
+    },
+    "service_code": {
+      "type": "string",
+      "description": "Service/procedure code (CPT or HCPCS)"
+    },
+    "diagnosis_codes": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[A-Z][0-9]{2}(\\.([0-9A-Z]{1,4}))?$",
+        "description": "ICD-10 diagnosis code"
+      }
+    },
+    "billing_code": {
+      "type": "string",
+      "description": "Billing code"
+    },
+    "notes": {
+      "type": "string",
+      "maxLength": 1000,
+      "description": "Additional notes or comments"
+    }
+  }
+}
+

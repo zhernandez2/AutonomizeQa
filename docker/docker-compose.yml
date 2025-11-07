@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  test-runner:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    container_name: autonomize-test-runner
+    volumes:
+      - ../tests:/app/tests
+      - ../config:/app/config
+      - ../reports:/app/reports
+      - ../logs:/app/logs
+    environment:
+      - API_BASE_URL=${API_BASE_URL:-http://host.docker.internal:8000}
+      - TEST_DATA_PATH=/app/tests/fixtures/data
+      - LOG_LEVEL=INFO
+    networks:
+      - autonomize-network
+    command: uv run pytest tests/ -v --html=reports/report.html --self-contained-html --json-report --json-report-file=reports/report.json
+
+  # Optional: Mock service for claims system integration testing
+  mock-claims-system:
+    image: wiremock/wiremock:latest
+    container_name: mock-claims-system
+    ports:
+      - "5000:8080"
+    volumes:
+      - ./wiremock/claims-system:/home/wiremock
+    networks:
+      - autonomize-network
+
+networks:
+  autonomize-network:
+    driver: bridge
+
