@@ -17,6 +17,7 @@ This repository contains a focused, QA test suite for testing an Agentic Platfor
 - [Installation](#installation)
 - [Test Execution](#test-execution)
 - [Test Suites](#test-suites)
+- [Documentation](#documentation)
 - [CI/CD Integration](#cicd-integration)
 - [Safety & Privacy Testing](#safety--privacy-testing)
 - [Reporting](#reporting)
@@ -230,6 +231,25 @@ Detailed test case documentation is available in the `docs/` directory:
 - [Safety & Privacy Test Cases](docs/test_cases/safety_privacy.md) - Proposed test suite (4 high-level + 2 scenarios)
 - [UI/UX Validation Test Cases](docs/test_cases/ui_ux_validation.md) - Manual testing (3 detailed + 2 scenarios)
 
+### Documentation
+
+#### Testing Requirements
+
+- **[Testing Requirements Specification](docs/TESTING_REQUIREMENTS.md)** - Testing requirements document explaining what needs to be tested, why it matters, and how to approach testing the Token Agent and AI Models from a QA perspective.
+
+#### Test Case Documentation
+
+- **[Manual Test Cases](docs/MANUAL_TEST_CASES.md)** - Manual test procedures with clear distinction between automated and manual tests. Includes 8 manual test cases covering agent integration, model integration, end-to-end workflows, and UI/UX validation.
+
+- **[Performance Test Cases](docs/NON_FUNCTIONAL_TEST_CASES.md)** - Performance test cases covering response times, latency, and throughput. Includes 3 test cases with detailed procedures and expected results.
+
+#### Detailed Test Case Specifications
+
+- **[Agent Integration Test Cases](docs/test_cases/agent_integration.md)** - Detailed test cases for data extraction agent
+- **[Model Integration Test Cases](docs/test_cases/model_integration.md)** - Detailed test cases for AI model integration
+- **[Safety & Privacy Test Cases](docs/test_cases/safety_privacy.md)** - Security and privacy test case designs
+- **[UI/UX Validation Test Cases](docs/test_cases/ui_ux_validation.md)** - User experience validation procedures
+
 #### Test Case Prioritization
 
 Each test case is classified with three dimensions to guide test execution planning:
@@ -295,6 +315,9 @@ Test reports are automatically generated in multiple formats:
 - `reports/agent_tests.html` - Agent integration test results
 - `reports/model_tests.html` - Model integration test results
 
+**Example Report:**
+- [Example Report](ExampleReport.png) - Sample test report output
+
 **What's Included:**
 - Test execution summary with pass/fail statistics
 - Code coverage metrics
@@ -307,9 +330,16 @@ Test reports are automatically generated in multiple formats:
 ```bash
 # Generate and view HTML report
 just test-report
+# or
+uv run pytest tests/ -v --html=reports/report.html --self-contained-html
+
+# View the report
 open reports/report.html  # macOS
 start reports/report.html  # Windows
+# or open reports/report.html in your browser
 ```
+
+**Note**: Test reports are generated artifacts and are excluded from git by default (see `.gitignore`). To generate fresh reports, run the test suite with the `--html` flag as shown above. Reports are automatically generated in CI/CD pipelines and available as downloadable artifacts.
 
 **Viewing Reports in CI/CD:**  
 See [Accessing CI/CD Test Reports](#accessing-cicd-test-reports) section for downloading artifacts from GitHub Actions.
